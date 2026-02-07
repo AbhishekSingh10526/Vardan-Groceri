@@ -1,10 +1,12 @@
+from datetime import datetime
+import re
 from functools import wraps
-from flask import render_template, request, redirect, url_for, flash, session
+from flask import render_template, request, redirect, url_for, flash, session, current_app
 
 import models
-import datetime
-import re
-from app import app, db
+from extensions import db
+
+app = current_app
 
 def auth_required(func):
     @wraps(func)
@@ -153,7 +155,7 @@ def add_product():
                            user=models.User.query.get(session['user_id']), 
                            category_id=category_id,
                            categories=models.Category.query.all(),
-                           nowstring = datetime.datetime.now().strftime("%Y-%m-%d")
+                           nowstring = datetime.now().strftime("%Y-%m-%d")
                            )
 
 @app.route('/product/add', methods=['POST'])
@@ -195,7 +197,7 @@ def add_product_post():
         flash('Manufacture date cannot be empty.')
         return redirect(url_for('add_product'))
     try:
-        man_date = datetime.datetime.strptime(man_date, '%Y-%m-%d')
+        man_date = datetime.strptime(man_date, '%Y-%m-%d')
     except ValueError:
         flash('Invalid manufacture date.')
         return redirect(url_for('add_product'))
@@ -213,7 +215,7 @@ def edit_product(id):
     return render_template('product/edit.html', user=models.User.query.get(session['user_id']), 
                            product=product,
                            categories=models.Category.query.all(),
-                           nowstring = datetime.datetime.now().strftime("%Y-%m-%d"),
+                           nowstring = datetime.now().strftime("%Y-%m-%d"),
                            manufacture_date = product.man_date.strftime("%Y-%m-%d")
                            )
 
@@ -256,7 +258,7 @@ def edit_product_post(id):
         flash('Manufacture date cannot be empty.')
         return redirect(url_for('add_product'))
     try:
-        man_date = datetime.datetime.strptime(man_date, '%Y-%m-%d')
+        man_date = datetime.strptime(man_date, '%Y-%m-%d')
     except ValueError:
         flash('Invalid manufacture date.')
         return redirect(url_for('add_product'))
